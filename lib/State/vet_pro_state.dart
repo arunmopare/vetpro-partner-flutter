@@ -47,21 +47,21 @@ class VetProState extends ChangeNotifier {
   Future<bool> login(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('https://your-backend-api.com/login'),
+        Uri.parse('http://localhost:3000/auth/login'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
+        body: jsonEncode({'username': email, 'password': password}),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        _token = data['token'];
-        _userName = data['name'];
-        _userEmail = data['email'];
+        _token = data['accessToken'];
+        // _userName = data['username'];
+        // _userEmail = data['email'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', _token);
-        await prefs.setString('userName', _userName);
-        await prefs.setString('userEmail', _userEmail);
+        // await prefs.setString('userName', _userName);
+        // await prefs.setString('userEmail', _userEmail);
 
         notifyListeners();
         return true;

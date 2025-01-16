@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vetpro/Pages/login_screen.dart';
+import 'package:vetpro/Widgets/auth-guard.dart';
 import 'Pages/home_page.dart';
 import 'Pages/profile_page.dart';
 import 'State/vet_pro_state.dart';
@@ -25,7 +27,11 @@ class VetProApp extends StatelessWidget {
           secondary: Colors.white,
         ),
       ),
-      home: VetProHome(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/home': (context) => AuthGuard(child: VetProHome()),
+      },
     );
   }
 }

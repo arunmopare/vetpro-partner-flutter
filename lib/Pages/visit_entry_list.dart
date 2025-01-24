@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:expandable/expandable.dart'; // Ensure this package is added in pubspec.yaml
 
 import 'package:vetpro/Constants/Constants.dart';
 
@@ -21,7 +22,6 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
   }
 
   Future<void> fetchVisitEntries() async {
-    // Replace with your backend URL
     const String backendUrl = Constants.BASE_API_URL + '/visit-entry';
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
@@ -60,7 +60,6 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
               onRefresh: fetchVisitEntries,
               child: visitEntries.isEmpty
                   ? ListView(
-                      // Adding a ListView to ensure the RefreshIndicator works
                       children: [
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.8,
@@ -74,11 +73,56 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                         final entry = visitEntries[index];
                         return Card(
                           margin: EdgeInsets.all(8.0),
-                          child: ListTile(
-                            title: Text(entry['siteName'] ?? 'No Site Name'),
-                            subtitle:
-                                Text(entry['siteLocation'] ?? 'No Site Location'),
-                            trailing: Text(entry['notes'] ?? 'No Notes'),
+                          child: Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: ExpandableNotifier(
+                              // Handles expand/collapse state
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    entry['siteName'] ?? 'No Site Name',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    entry['siteLocation'] ?? 'No Site Location',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  ExpandablePanel(
+                                    header: Text(
+                                      'Notes:',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    collapsed: Text(
+                                      entry['notes'] ?? 'No Notes',
+                                      softWrap: true,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    expanded: Text(
+                                      entry['notes'] ?? 'No Notes',
+                                      softWrap: true,
+                                    ),
+                                    theme: ExpandableThemeData(
+                                      hasIcon: true,
+                                      iconColor: Colors.blue,
+                                      tapBodyToExpand: true,
+                                      tapBodyToCollapse: true,
+                                      tapHeaderToExpand: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       },

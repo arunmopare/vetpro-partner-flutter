@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vetpro/State/vet_pro_state.dart';
 
 class LoginScreen extends StatefulWidget {

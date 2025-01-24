@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vetpro/Constants/Constants.dart';
 import 'package:vetpro/Pages/login_screen.dart';
 import 'package:vetpro/Widgets/auth-guard.dart';
@@ -13,6 +14,7 @@ import 'Pages/profile_page.dart';
 import 'State/vet_pro_state.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   runApp(ChangeNotifierProvider(
     create: (_) => VetProState(),
@@ -47,14 +49,18 @@ Future<void> sendLocationToBackend() async {
 
   LocationData locationData = await location.getLocation();
 
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token') ?? '';
   // Send location data to backend
   final response = await http.post(
     Uri.parse(Constants.BASE_API_URL + '/location'),
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
     body: jsonEncode({
       'latitude': locationData.latitude,
       'longitude': locationData.longitude,
-      'timestamp': DateTime.now().toIso8601String(),
     }),
   );
 

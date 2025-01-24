@@ -6,7 +6,9 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vetpro/Constants/Constants.dart';
+import 'package:vetpro/Pages/add_visit_entry.dart';
 import 'package:vetpro/Pages/login_screen.dart';
+import 'package:vetpro/Pages/visit_entry_list.dart';
 import 'package:vetpro/Widgets/auth-guard.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Pages/home_page.dart';
@@ -19,7 +21,7 @@ void main() {
   runApp(ChangeNotifierProvider(
     create: (_) => VetProState(),
     child: VetProApp(),
-  )); 
+  ));
 }
 
 void callbackDispatcher() {
@@ -125,6 +127,10 @@ class _VetProAppState extends State<VetProApp> {
               routes: {
                 '/login': (context) => LoginScreen(),
                 '/home': (context) => AuthGuard(child: VetProHome()),
+                '/add-visit': (context) =>
+                    AuthGuard(child: AddVisitEntryPage()),
+                '/my-visits': (context) =>
+                    AuthGuard(child: VisitEntryListPage()),
               },
             );
           },
@@ -143,7 +149,12 @@ class VetProHome extends StatefulWidget {
 
 class _VetProHomeState extends State<VetProHome> {
   int _selectedIndex = 0;
-  final _pages = [HomePage(), ProfilePage()];
+  final _pages = [
+    HomePage(),
+    AddVisitEntryPage(),
+    VisitEntryListPage(),
+    // ProfilePage()
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -165,9 +176,17 @@ class _VetProHomeState extends State<VetProHome> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.add),
+            label: 'Add Visit',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'My Visits',
+          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.person),
+          //   label: 'Profile',
+          // ),
         ],
       ),
     );

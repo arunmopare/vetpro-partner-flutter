@@ -1,7 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+
+import 'package:vetpro/Constants/Constants.dart';
 
 class AddVisitEntryPage extends StatefulWidget {
   @override
@@ -21,12 +23,17 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
       final notes = _notesController.text;
 
       // Replace with your backend URL
-      const String backendUrl = 'https://your-backend-url/api/visit-entry';
+      const String backendUrl = Constants.BASE_API_URL + '/visit-entry';
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
 
       try {
         final response = await http.post(
           Uri.parse(backendUrl),
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
           body: jsonEncode({
             'siteName': siteName,
             'siteLocation': siteLocation,
@@ -34,11 +41,11 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
           }),
         );
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 201) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Visit entry saved successfully!')),
           );
-          Navigator.pop(context); // Return to the previous page
+          // Navigator.pop(context); // Return to the previous page
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to save visit entry.')),

@@ -15,14 +15,18 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
   final TextEditingController _siteNameController = TextEditingController();
   final TextEditingController _siteLocationController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  bool _isSubmitting = false;
 
   Future<void> _saveVisitEntry() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isSubmitting = true;
+      });
+
       final siteName = _siteNameController.text;
       final siteLocation = _siteLocationController.text;
       final notes = _notesController.text;
 
-      // Replace with your backend URL
       const String backendUrl = Constants.BASE_API_URL + '/visit-entry';
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token') ?? '';
@@ -32,7 +36,7 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
           Uri.parse(backendUrl),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
+            'Authorization': 'Bearer $token',
           },
           body: jsonEncode({
             'siteName': siteName,
@@ -41,19 +45,39 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
           }),
         );
 
+        setState(() {
+          _isSubmitting = false;
+        });
+
         if (response.statusCode == 201) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Visit entry saved successfully!')),
+            SnackBar(
+              content: Text('Visit entry saved successfully!'),
+              backgroundColor: Colors.green,
+            ),
           );
-          // Navigator.pop(context); // Return to the previous page
+          _formKey.currentState?.reset();
+          _siteNameController.clear();
+          _siteLocationController.clear();
+          _notesController.clear();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to save visit entry.')),
+            SnackBar(
+              content: Text('Failed to save visit entry.'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } catch (error) {
+        setState(() {
+          _isSubmitting = false;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $error')),
+          SnackBar(
+            content: Text('Error: $error'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -64,16 +88,31 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Visit Entry'),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                'Add a new visit entry',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _siteNameController,
-                decoration: InputDecoration(labelText: 'Site Name'),
+                decoration: InputDecoration(
+                  labelText: 'Site Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.business),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the site name';
@@ -81,9 +120,14 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _siteLocationController,
-                decoration: InputDecoration(labelText: 'Site Location'),
+                decoration: InputDecoration(
+                  labelText: 'Site Location',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the site location';
@@ -91,9 +135,14 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _notesController,
-                decoration: InputDecoration(labelText: 'Notes'),
+                decoration: InputDecoration(
+                  labelText: 'Notes',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.notes),
+                ),
                 maxLines: 4,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -103,10 +152,24 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
                 },
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveVisitEntry,
-                child: Text('Save'),
-              ),
+              _isSubmitting
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.save),
+                        label: Text(
+                          'Save',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 14.0),
+                        ),
+                        onPressed: _saveVisitEntry,
+                      ),
+                    ),
             ],
           ),
         ),

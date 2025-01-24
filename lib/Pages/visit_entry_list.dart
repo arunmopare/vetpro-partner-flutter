@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:expandable/expandable.dart'; // Ensure this package is added in pubspec.yaml
+import 'package:expandable/expandable.dart';
 
 import 'package:vetpro/Constants/Constants.dart';
 
@@ -53,6 +53,7 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Visit Entries'),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -63,7 +64,15 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                       children: [
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.8,
-                          child: Center(child: Text('No visit entries found.')),
+                          child: Center(
+                            child: Text(
+                              'No visit entries found.',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     )
@@ -72,49 +81,85 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                       itemBuilder: (context, index) {
                         final entry = visitEntries[index];
                         return Card(
-                          margin: EdgeInsets.all(8.0),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          elevation: 4.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
                           child: Padding(
-                            padding: EdgeInsets.all(12.0),
+                            padding: EdgeInsets.all(16.0),
                             child: ExpandableNotifier(
-                              // Handles expand/collapse state
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    entry['siteName'] ?? 'No Site Name',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.1),
+                                        child: Icon(
+                                          Icons.location_on,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          entry['siteName'] ?? 'No Site Name',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 4),
+                                  SizedBox(height: 8),
                                   Text(
                                     entry['siteLocation'] ?? 'No Site Location',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.grey[600],
+                                      color: Colors.grey[700],
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  SizedBox(height: 12),
                                   ExpandablePanel(
-                                    header: Text(
-                                      'Notes:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                    header: Padding(
+                                      padding: EdgeInsets.only(bottom: 8.0),
+                                      child: Text(
+                                        'Notes:',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
                                     ),
                                     collapsed: Text(
                                       entry['notes'] ?? 'No Notes',
                                       softWrap: true,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[600],
+                                      ),
                                     ),
                                     expanded: Text(
                                       entry['notes'] ?? 'No Notes',
                                       softWrap: true,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
                                     ),
                                     theme: ExpandableThemeData(
                                       hasIcon: true,
-                                      iconColor: Colors.blue,
+                                      iconColor: Theme.of(context).primaryColor,
                                       tapBodyToExpand: true,
                                       tapBodyToCollapse: true,
                                       tapHeaderToExpand: true,

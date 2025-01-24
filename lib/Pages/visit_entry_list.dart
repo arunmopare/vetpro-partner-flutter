@@ -56,23 +56,34 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : visitEntries.isEmpty
-              ? Center(child: Text('No visit entries found.'))
-              : ListView.builder(
-                  itemCount: visitEntries.length,
-                  itemBuilder: (context, index) {
-                    final entry = visitEntries[index];
-                    return Card(
-                      margin: EdgeInsets.all(8.0),
-                      child: ListTile(
-                        title: Text(entry['siteName'] ?? 'No Site Name'),
-                        subtitle:
-                            Text(entry['siteLocation'] ?? 'No Site Location'),
-                        trailing: Text(entry['notes'] ?? 'No Notes'),
-                      ),
-                    );
-                  },
-                ),
+          : RefreshIndicator(
+              onRefresh: fetchVisitEntries,
+              child: visitEntries.isEmpty
+                  ? ListView(
+                      // Adding a ListView to ensure the RefreshIndicator works
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.8,
+                          child: Center(child: Text('No visit entries found.')),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      itemCount: visitEntries.length,
+                      itemBuilder: (context, index) {
+                        final entry = visitEntries[index];
+                        return Card(
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            title: Text(entry['siteName'] ?? 'No Site Name'),
+                            subtitle:
+                                Text(entry['siteLocation'] ?? 'No Site Location'),
+                            trailing: Text(entry['notes'] ?? 'No Notes'),
+                          ),
+                        );
+                      },
+                    ),
+            ),
     );
   }
 }

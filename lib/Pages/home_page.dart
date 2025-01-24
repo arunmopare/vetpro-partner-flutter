@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vetpro/Pages/profile_page.dart';
 import 'package:vetpro/State/vet_pro_state.dart';
+import 'add_visit_entry.dart'; // Import the new AddVisitEntryPage
 
 class VetProHome extends StatefulWidget {
   const VetProHome({super.key});
@@ -46,6 +47,7 @@ class _VetProHomeState extends State<VetProHome> {
 }
 
 // Home Page with Timer and Check-In Button
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 

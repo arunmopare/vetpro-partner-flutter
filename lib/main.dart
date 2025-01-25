@@ -167,9 +167,11 @@ class _VetProHomeState extends State<VetProHome> {
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color.fromARGB(255, 0, 0, 0),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: Color(0xFFFF6600),
+        unselectedItemColor: Color.fromARGB(255, 255, 255, 255),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

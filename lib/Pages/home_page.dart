@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
 import 'package:vetpro/Pages/profile_page.dart';
 import 'package:vetpro/State/vet_pro_state.dart';
 import 'add_visit_entry.dart';
@@ -58,153 +59,172 @@ class _VetProHomeState extends State<VetProHome> {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  Future<void> _launchSupportURL() async {
+    var uri = Uri.https('www.linkedin.com', '/in/arun-mopare');
+    await launchUrl(uri);
+
+    /// print(uri); // https://example.org/path?q=dart
+    if (await canLaunchUrl(uri)) {
+    } else {
+      throw 'Could not launch URL';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<VetProState>(context);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('VetPro - Home'),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Welcome Section
-              Container(
-                padding: EdgeInsets.all(16.0),
-                color: Color.fromARGB(255, 255, 255, 255),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome to Vet Pro Partner!',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 0, 0, 0),
-                      ),
+      appBar: AppBar(
+        title: Text('VetPro - Home'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome Section
+            Container(
+              padding: EdgeInsets.all(16.0),
+              color: Color.fromARGB(255, 255, 255, 255),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome to Vet Pro Partner!',
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 0, 0, 0),
                     ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      'Your one-stop solution for managing veterinary visits and client interactions.',
-                      style: TextStyle(fontSize: 16.0, color: const Color.fromARGB(179, 0, 0, 0)),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    'Your one-stop solution for managing veterinary visits and client interactions.',
+                    style: TextStyle(
+                        fontSize: 16.0,
+                        color: const Color.fromARGB(179, 0, 0, 0)),
+                  ),
+                ],
               ),
-              SizedBox(height: 16.0),
-              // Quick Actions Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Quick Actions',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
+            ),
+            SizedBox(height: 16.0),
+            // Quick Actions Section
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Quick Actions',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _quickActionCard(
+                        icon: Icons.add,
+                        title: 'Add Visit',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddVisitEntryPage()),
+                          );
+                        },
                       ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _quickActionCard(
-                          icon: Icons.add,
-                          title: 'Add Visit',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddVisitEntryPage()),
-                            );
-                          },
-                        ),
-                        _quickActionCard(
-                          icon: Icons.list,
-                          title: 'View Visits',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => VisitEntryListPage()),
-                            );
-                          },
-                        ),
-                        _quickActionCard(
-                          icon: Icons.person,
-                          title: 'Profile',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfilePage()),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      _quickActionCard(
+                        icon: Icons.list,
+                        title: 'View Visits',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VisitEntryListPage()),
+                          );
+                        },
+                      ),
+                      _quickActionCard(
+                        icon: Icons.person,
+                        title: 'Profile',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage()),
+                          );
+                        },
+                      ),
+                      _quickActionCard(
+                        icon: Icons.support_agent,
+                        title: 'Contact Support',
+                        onTap: _launchSupportURL,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              SizedBox(height: 16.0),
-              // Check-In Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Daily Activity',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+            ),
+            SizedBox(height: 16.0),
+            // Check-In Section
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Daily Activity',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 8.0),
-                    Card(
-                      elevation: 4.0,
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 15,
-                                ),
-                              ),
-                              onPressed: state.toggleCheckIn,
-                              child: Text(
-                                state.checkedIn ? 'Check Out' : 'Check In',
-                                style: TextStyle(fontSize: 18),
+                  ),
+                  SizedBox(height: 8.0),
+                  Card(
+                    elevation: 4.0,
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 40,
+                                vertical: 15,
                               ),
                             ),
-                            if (state.checkedIn)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 20.0),
-                                child: Text(
-                                  _formatTime(state.elapsedTime),
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            onPressed: state.toggleCheckIn,
+                            child: Text(
+                              state.checkedIn ? 'Check Out' : 'Check In',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                          if (state.checkedIn)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20.0),
+                              child: Text(
+                                _formatTime(state.elapsedTime),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _quickActionCard({

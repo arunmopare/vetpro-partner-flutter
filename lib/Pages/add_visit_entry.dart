@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -23,6 +24,23 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
         _isSubmitting = true;
       });
 
+      // Get Location
+      Location location = Location();
+
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) return;
+      }
+
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) return;
+      }
+
+      LocationData locationData = await location.getLocation();
+
       final siteName = _siteNameController.text;
       final siteLocation = _siteLocationController.text;
       final notes = _notesController.text;
@@ -42,6 +60,8 @@ class _AddVisitEntryPageState extends State<AddVisitEntryPage> {
             'siteName': siteName,
             'siteLocation': siteLocation,
             'notes': notes,
+            'latitude': locationData.latitude,
+            'longitude': locationData.longitude,
           }),
         );
 

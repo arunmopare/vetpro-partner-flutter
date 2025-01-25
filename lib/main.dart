@@ -12,7 +12,6 @@ import 'package:vetpro/Pages/visit_entry_list.dart';
 import 'package:vetpro/Widgets/auth-guard.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Pages/home_page.dart';
-import 'Pages/profile_page.dart';
 import 'State/vet_pro_state.dart';
 
 void main() {

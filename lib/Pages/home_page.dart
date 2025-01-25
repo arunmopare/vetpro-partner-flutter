@@ -64,10 +64,10 @@ class HomePage extends StatelessWidget {
     await launchUrl(uri);
 
     /// print(uri); // https://example.org/path?q=dart
-    if (await canLaunchUrl(uri)) {
-    } else {
-      throw 'Could not launch URL';
-    }
+    // if (await canLaunchUrl(uri)) {
+    // } else {
+    //   throw 'Could not launch URL';
+    // }
   }
 
   @override

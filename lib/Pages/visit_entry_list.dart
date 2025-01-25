@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:expandable/expandable.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:vetpro/Constants/Constants.dart';
 
@@ -27,8 +28,10 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
     final token = prefs.getString('token') ?? '';
 
     try {
-      final response = await http.get(Uri.parse(backendUrl),
-          headers: {'Authorization': 'Bearer $token'});
+      final response = await http.get(
+        Uri.parse(backendUrl),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
       if (response.statusCode == 200) {
         setState(() {
@@ -46,6 +49,13 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
         SnackBar(content: Text('Error: $error')),
       );
     }
+  }
+
+  Future<void> _openInGoogleMaps(double latitude, double longitude) async {
+    final uri =
+        Uri.https('www.google.com', '/maps', {'q': '$latitude,$longitude'});
+
+    await launchUrl(uri);
   }
 
   @override
@@ -80,6 +90,8 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                       itemCount: visitEntries.length,
                       itemBuilder: (context, index) {
                         final entry = visitEntries[index];
+                        final latitude = entry['latitude'];
+                        final longitude = entry['longitude'];
                         return Card(
                           margin: EdgeInsets.symmetric(
                             horizontal: 16.0,
@@ -89,9 +101,10 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: ExpandableNotifier(
+                          child: ExpandableNotifier(
+                            // Ensure each item has its own state
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -116,6 +129,21 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                                             color: Colors.black87,
                                           ),
                                         ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.pin_drop,
+                                          color: (latitude != null &&
+                                                  longitude != null)
+                                              ? Theme.of(context).primaryColor
+                                              : Colors.grey[700],
+                                        ),
+                                        onPressed: latitude != null &&
+                                                longitude != null
+                                            ? () => _openInGoogleMaps(
+                                                latitude, longitude)
+                                            : null,
+                                        tooltip: 'Open in Google Maps',
                                       ),
                                     ],
                                   ),
@@ -142,7 +170,7 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                                     collapsed: Text(
                                       entry['notes'] ?? 'No Notes',
                                       softWrap: true,
-                                      maxLines: 2,
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 14,

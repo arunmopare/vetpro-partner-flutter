@@ -104,12 +104,12 @@ class VetProState extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _token = data['accessToken'];
-        // _userName = data['username'];
+        _userName = data['username'];
         // _userEmail = data['email'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', _token);
-        // await prefs.setString('userName', _userName);
+        await prefs.setString('userName', _userName);
         // await prefs.setString('userEmail', _userEmail);
 
         notifyListeners();

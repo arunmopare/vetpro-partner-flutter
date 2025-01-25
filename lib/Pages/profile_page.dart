@@ -2,8 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vetpro/State/vet_pro_state.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load user details on page initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<VetProState>(context, listen: false).loadUserDetails();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

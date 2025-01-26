@@ -62,12 +62,6 @@ class HomePage extends StatelessWidget {
   Future<void> _launchSupportURL() async {
     var uri = Uri.https('www.linkedin.com', '/in/arun-mopare');
     await launchUrl(uri);
-
-    /// print(uri); // https://example.org/path?q=dart
-    // if (await canLaunchUrl(uri)) {
-    // } else {
-    //   throw 'Could not launch URL';
-    // }
   }
 
   @override
@@ -170,57 +164,57 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 16.0),
             // Check-In Section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Daily Activity',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Card(
-                    elevation: 4.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 40,
-                                vertical: 15,
-                              ),
-                            ),
-                            onPressed: state.toggleCheckIn,
-                            child: Text(
-                              state.checkedIn ? 'Check Out' : 'Check In',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                          if (state.checkedIn)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
-                              child: Text(
-                                _formatTime(state.elapsedTime),
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         'Daily Activity',
+            //         style: TextStyle(
+            //           fontSize: 18.0,
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //       SizedBox(height: 8.0),
+            //       Card(
+            //         elevation: 4.0,
+            //         child: Padding(
+            //           padding: EdgeInsets.all(16.0),
+            //           child: Column(
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               ElevatedButton(
+            //                 style: ElevatedButton.styleFrom(
+            //                   padding: EdgeInsets.symmetric(
+            //                     horizontal: 40,
+            //                     vertical: 15,
+            //                   ),
+            //                 ),
+            //                 onPressed: state.toggleCheckIn,
+            //                 child: Text(
+            //                   state.checkedIn ? 'Check Out' : 'Check In',
+            //                   style: TextStyle(fontSize: 18),
+            //                 ),
+            //               ),
+            //               if (state.checkedIn)
+            //                 Padding(
+            //                   padding: const EdgeInsets.only(top: 20.0),
+            //                   child: Text(
+            //                     _formatTime(state.elapsedTime),
+            //                     style: TextStyle(
+            //                       fontSize: 24,
+            //                       fontWeight: FontWeight.bold,
+            //                     ),
+            //                   ),
+            //                 ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

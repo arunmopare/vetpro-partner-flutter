@@ -114,7 +114,7 @@ class _VetProAppState extends State<VetProApp> {
         return Consumer<VetProState>(
           builder: (context, state, child) {
             return MaterialApp(
-              title: 'VetPro',
+              title: 'VetPro Admin',
               theme: ThemeData(
                 primaryColor: Color(0xFFFF6600),
                 colorScheme: ColorScheme.fromSwatch().copyWith(

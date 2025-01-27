@@ -1,12 +1,14 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:expandable/expandable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 import 'package:vetpro/Constants/Constants.dart';
+import 'package:vetpro/State/vet_pro_state.dart';
 
 class VisitEntryListPage extends StatefulWidget {
   @override
@@ -22,7 +24,11 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
   void initState() {
     super.initState();
     fetchVisitEntries();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<VetProState>(context, listen: false).loadUserDetails();
+    });
   }
+
 
   Future<void> fetchVisitEntries() async {
     const String backendUrl = Constants.BASE_API_URL + '/visit-entry';
@@ -88,6 +94,8 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final state = Provider.of<VetProState>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Visit Entries'),
@@ -95,16 +103,16 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
       ),
       body: Column(
         children: [
-          // Date Selector
+          // Date Selector with Modern UI
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton.icon(
+                IconButton(
                   onPressed: () => _changeDate(-1),
-                  icon: const Icon(Icons.arrow_left),
-                  label: const Text('Previous'),
+                  icon: Icon(Icons.arrow_back_rounded,
+                      color: Theme.of(context).primaryColor),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                     shape: RoundedRectangleBorder(
@@ -122,19 +130,19 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Text(
-                      DateFormat('yyyy-MM-dd').format(selectedDate),
+                      DateFormat('MMM dd, yyyy').format(selectedDate),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-                ElevatedButton.icon(
+                IconButton(
                   onPressed: () => _changeDate(1),
-                  icon: const Icon(Icons.arrow_right),
-                  label: const Text('Next'),
+                  icon: Icon(Icons.arrow_forward_rounded,
+                      color: Theme.of(context).primaryColor),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                     shape: RoundedRectangleBorder(
@@ -152,22 +160,12 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                 : RefreshIndicator(
                     onRefresh: fetchVisitEntries,
                     child: visitEntries.isEmpty
-                        ? ListView(
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.8,
-                                child: const Center(
-                                  child: Text(
-                                    'No visit entries found.',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                        ? const Center(
+                            child: Text(
+                              'No visit entries found.',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.grey),
+                            ),
                           )
                         : ListView.builder(
                             itemCount: visitEntries.length,
@@ -175,114 +173,85 @@ class _VisitEntryListPageState extends State<VisitEntryListPage> {
                               final entry = visitEntries[index];
                               final latitude = entry['latitude'];
                               final longitude = entry['longitude'];
+                              final createdOn =
+                                  DateFormat('MMM dd, yyyy hh:mm a').format(
+                                      DateTime.parse(entry['createdAt'])
+                                          .toLocal());
                               return Card(
+                                elevation: 6.0,
                                 margin: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 8.0,
-                                ),
-                                elevation: 4.0,
+                                    vertical: 8.0, horizontal: 16.0),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderRadius: BorderRadius.circular(15.0),
                                 ),
-                                child: ExpandableNotifier(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            CircleAvatar(
-                                              backgroundColor: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.1),
-                                              child: Icon(
-                                                Icons.location_on,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Text(
-                                                entry['siteName'] ??
-                                                    'No Site Name',
-                                                style: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                            ),
-                                            IconButton(
-                                              icon: Icon(
-                                                Icons.pin_drop,
-                                                color: (latitude != null &&
-                                                        longitude != null)
-                                                    ? Theme.of(context)
-                                                        .primaryColor
-                                                    : Colors.grey,
-                                              ),
-                                              onPressed: latitude != null &&
-                                                      longitude != null
-                                                  ? () => _openInGoogleMaps(
-                                                      latitude, longitude)
-                                                  : null,
-                                              tooltip: 'Open in Google Maps',
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          entry['siteLocation'] ??
-                                              'No Site Location',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        ExpandablePanel(
-                                          header: const Padding(
-                                            padding:
-                                                EdgeInsets.only(bottom: 8.0),
-                                            child: Text(
-                                              'Notes:',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                          ),
-                                          collapsed: Text(
-                                            entry['notes'] ?? 'No Notes',
-                                            softWrap: true,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          expanded: Text(
-                                            entry['notes'] ?? 'No Notes',
-                                            softWrap: true,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          theme: ExpandableThemeData(
-                                            hasIcon: true,
-                                            iconColor:
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        leading: CircleAvatar(
+                                          backgroundColor: Theme.of(context)
+                                              .primaryColor
+                                              .withOpacity(0.1),
+                                          child: Icon(
+                                            Icons.person,
+                                            color:
                                                 Theme.of(context).primaryColor,
-                                            tapBodyToExpand: true,
-                                            tapBodyToCollapse: true,
-                                            tapHeaderToExpand: true,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                        title: Text(
+                                          state.userName ?? 'Unknown User',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        subtitle:
+                                            Text('Created on: $createdOn'),
+                                        trailing: IconButton(
+                                          icon: const Icon(Icons.pin_drop,
+                                              color: Colors.blue),
+                                          onPressed: () => _openInGoogleMaps(
+                                              latitude, longitude),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        "Site Name: ${entry['siteName'] ?? 'No Site Name'}",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        "Site Location: ${entry['siteLocation'] ?? 'No Site Location'}",
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      ExpandablePanel(
+                                        header: Text(
+                                          'Notes:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        collapsed: Text(
+                                          entry['notes'] ?? 'No Notes',
+                                          softWrap: true,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        expanded: Text(
+                                          entry['notes'] ?? 'No Notes',
+                                          softWrap: true,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

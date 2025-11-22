@@ -69,184 +69,359 @@ class HomePage extends StatelessWidget {
     final state = Provider.of<VetProState>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('VetPro - Home'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome Section
-            Container(
-              padding: EdgeInsets.all(16.0),
-              color: Color.fromARGB(255, 255, 255, 255),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome to Vet Pro Partner!',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFFF6600).withOpacity(0.1),
+              Colors.white,
+              Color(0xFFFF6600).withOpacity(0.05),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Welcome Section with Gradient
+                Container(
+                  margin: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(24.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFFF6600),
+                        Color(0xFFFF8833),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    'Your one-stop solution for managing veterinary visits and client interactions.',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        color: const Color.fromARGB(179, 0, 0, 0)),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16.0),
-            // Quick Actions Section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  Text(
-                    'Quick Actions',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _quickActionCard(
-                        icon: Icons.add,
-                        title: 'Add Visit',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddVisitEntryPage()),
-                          );
-                        },
-                      ),
-                      _quickActionCard(
-                        icon: Icons.list,
-                        title: 'View Visits',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => VisitEntryListPage()),
-                          );
-                        },
-                      ),
-                      _quickActionCard(
-                        icon: Icons.person,
-                        title: 'Profile',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProfilePage()),
-                          );
-                        },
-                      ),
-                      _quickActionCard(
-                        icon: Icons.support_agent,
-                        title: 'Contact Support',
-                        onTap: _launchSupportURL,
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFFFF6600).withOpacity(0.3),
+                        blurRadius: 15,
+                        offset: Offset(0, 8),
                       ),
                     ],
                   ),
-                ],
-              ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.waving_hand,
+                              color: Colors.white, size: 28),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Welcome Back!',
+                              style: TextStyle(
+                                fontSize: 28.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          // Logout button
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.logout, color: Colors.white),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    title: Text('Logout'),
+                                    content: Text(
+                                        'Are you sure you want to logout?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          state.logout();
+                                          Navigator.of(context)
+                                              .pushReplacementNamed('/login');
+                                        },
+                                        child: Text(
+                                          'Logout',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              tooltip: 'Logout',
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4.0),
+                      Text(
+                        state.userName.isNotEmpty ? state.userName : 'Partner',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      SizedBox(height: 12.0),
+                      Text(
+                        'Your one-stop solution for managing veterinary visits and client interactions.',
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          color: Colors.white.withOpacity(0.95),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                // Quick Actions Section
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Quick Actions',
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      SizedBox(height: 16.0),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        children: [
+                          _quickActionCard(
+                            context: context,
+                            icon: Icons.add_circle_outline,
+                            title: 'Add Visit',
+                            subtitle: 'Create new entry',
+                            gradient: [Color(0xFFFF6600), Color(0xFFFF8833)],
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddVisitEntryPage()),
+                              );
+                            },
+                          ),
+                          _quickActionCard(
+                            context: context,
+                            icon: Icons.list_alt,
+                            title: 'View Visits',
+                            subtitle: 'Browse entries',
+                            gradient: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => VisitEntryListPage()),
+                              );
+                            },
+                          ),
+                          _quickActionCard(
+                            context: context,
+                            icon: Icons.support_agent,
+                            title: 'Support',
+                            subtitle: 'Get help',
+                            gradient: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+                            onTap: _launchSupportURL,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                // Stats Section
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Overview',
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      SizedBox(height: 16.0),
+                      Container(
+                        padding: EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _statItem(
+                              icon: Icons.calendar_today,
+                              label: 'This Week',
+                              value: '-',
+                              color: Color(0xFFFF6600),
+                            ),
+                            _buildDivider(),
+                            _statItem(
+                              icon: Icons.trending_up,
+                              label: 'This Month',
+                              value: '-',
+                              color: Color(0xFF4CAF50),
+                            ),
+                            _buildDivider(),
+                            _statItem(
+                              icon: Icons.star,
+                              label: 'Total Visits',
+                              value: '-',
+                              color: Color(0xFF2196F3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 32.0),
+              ],
             ),
-            SizedBox(height: 16.0),
-            // Check-In Section
-            // Padding(
-            //   padding: EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Text(
-            //         'Daily Activity',
-            //         style: TextStyle(
-            //           fontSize: 18.0,
-            //           fontWeight: FontWeight.bold,
-            //         ),
-            //       ),
-            //       SizedBox(height: 8.0),
-            //       Card(
-            //         elevation: 4.0,
-            //         child: Padding(
-            //           padding: EdgeInsets.all(16.0),
-            //           child: Column(
-            //             crossAxisAlignment: CrossAxisAlignment.start,
-            //             children: [
-            //               ElevatedButton(
-            //                 style: ElevatedButton.styleFrom(
-            //                   padding: EdgeInsets.symmetric(
-            //                     horizontal: 40,
-            //                     vertical: 15,
-            //                   ),
-            //                 ),
-            //                 onPressed: state.toggleCheckIn,
-            //                 child: Text(
-            //                   state.checkedIn ? 'Check Out' : 'Check In',
-            //                   style: TextStyle(fontSize: 18),
-            //                 ),
-            //               ),
-            //               if (state.checkedIn)
-            //                 Padding(
-            //                   padding: const EdgeInsets.only(top: 20.0),
-            //                   child: Text(
-            //                     _formatTime(state.elapsedTime),
-            //                     style: TextStyle(
-            //                       fontSize: 24,
-            //                       fontWeight: FontWeight.bold,
-            //                     ),
-            //                   ),
-            //                 ),
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildDivider() {
+    return Container(
+      height: 40,
+      width: 1,
+      color: Colors.grey.withOpacity(0.3),
+    );
+  }
+
+  Widget _statItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 28),
+        SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
   Widget _quickActionCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
+    required String subtitle,
+    required List<Color> gradient,
     required Function onTap,
   }) {
     return GestureDetector(
       onTap: () => onTap(),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 30.0,
-            backgroundColor: Color(0xFFFF6600).withOpacity(0.2),
-            child: Icon(icon, color: Color(0xFFFF6600), size: 30.0),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradient,
           ),
-          SizedBox(height: 8.0),
-          Text(title, style: TextStyle(fontSize: 14.0)),
-        ],
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: gradient[0].withOpacity(0.3),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: Colors.white, size: 32.0),
+              ),
+              SizedBox(height: 12.0),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 4.0),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.white.withOpacity(0.9),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       ),
     );
-  }
-
-  String _formatTime(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return "$hours:$minutes:$seconds";
   }
 }
